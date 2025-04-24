@@ -1,0 +1,80 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Separator } from "../../components/ui/separator";
+import { AnalysisSection } from "./sections/AnalysisSection/AnalysisSection";
+import { CallToActionSection } from "./sections/CallToActionSection/CallToActionSection";
+import { FeaturesSection } from "./sections/FeaturesSection";
+import { FooterSection } from "./sections/FooterSection";
+import { HeroSection } from "./sections/HeroSection";
+import { TestimonialsSection } from "./sections/TestimonialsSection";
+import { ToolsSection } from "./sections/ToolsSection";
+import { AgentType } from "../../types/agents";
+import { useAuth } from "../../contexts/AuthContext";
+import { AppHeader } from "../../components/Header/AppHeader";
+
+export const ExamMine = (): JSX.Element => {
+  const navigate = useNavigate();
+  const { authState } = useAuth();
+
+  const handleConnectClick = () => {
+    if (authState.isAuthenticated) {
+      console.log("Connect button clicked, navigating to exam analysis agent");
+      navigate(`/agent/${AgentType.EXAM_ANALYZER}`);
+    } else {
+      console.log("Connect button clicked, navigating to login");
+      navigate("/login");
+    }
+  };
+
+  return (
+    <div className="relative w-full bg-white">
+      {/* Use the AppHeader component */}
+      <AppHeader />
+
+      {/* Main Content */}
+      <div className="pt-20">
+        {/* Call To Action Section */}
+        <section className="w-full">
+          <CallToActionSection onButtonClick={handleConnectClick} />
+        </section>
+
+        {/* Hero Section with blue background */}
+        <section className="w-full bg-[#050a1e]">
+          <div className="h-[852px] bg-[#1760c6]">
+            <HeroSection />
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="w-full">
+          <div className="mx-auto py-12">
+            <h2 className="text-center text-[40px] font-bold text-[#375375] font-['Inter',Helvetica] leading-[56px] mb-8">
+              Descubra nossas outras ferramentas em destaque
+            </h2>
+            <FeaturesSection />
+          </div>
+        </section>
+
+        {/* Analysis Section */}
+        <section className="w-full">
+          <AnalysisSection />
+        </section>
+
+        {/* Tools Section */}
+        <section className="w-full">
+          <ToolsSection />
+        </section>
+
+        {/* Footer Section */}
+        <section className="w-full">
+          <FooterSection />
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="w-full">
+          <TestimonialsSection />
+        </section>
+      </div>
+    </div>
+  );
+};
