@@ -57,7 +57,7 @@ export const InteractionHistory: React.FC = () => {
       // Get interactions with pagination
       const result = await firebaseService.getUserInteractions(
         pageSize,
-        nextPage ? lastVisible : undefined
+        nextPage ? lastVisible || undefined : undefined
       );
       
       if (nextPage) {
@@ -85,11 +85,11 @@ export const InteractionHistory: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Seu Histórico de Interações</h1>
+    <div className="container py-8 mx-auto">
+      <h1 className="mb-6 text-2xl font-bold text-gray-800">Seu Histórico de Interações</h1>
       
       {error && (
-        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+        <div className="p-4 mb-6 text-red-700 bg-red-100 rounded-lg">
           {error}
         </div>
       )}
@@ -108,9 +108,9 @@ export const InteractionHistory: React.FC = () => {
             {interactions.map((interaction) => (
               <Card key={interaction.id} className="p-6 shadow-md">
                 <div className="flex flex-col gap-4">
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <div>
-                      <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                      <span className="inline-block px-3 py-1 text-sm font-medium text-blue-700 bg-blue-100 rounded-full">
                         {getAgentName(interaction.agent_type)}
                       </span>
                       <span className="ml-3 text-sm text-gray-500">
@@ -127,7 +127,7 @@ export const InteractionHistory: React.FC = () => {
                   <div className="mt-2">
                     <h3 className="text-lg font-semibold text-gray-800">Resposta:</h3>
                     <div 
-                      className="mt-1 text-gray-700 prose max-w-none"
+                      className="mt-1 prose text-gray-700 max-w-none"
                       dangerouslySetInnerHTML={{ __html: interaction.answer.replace(/\n/g, '<br>') }}
                     />
                   </div>
@@ -141,7 +141,7 @@ export const InteractionHistory: React.FC = () => {
               <Button 
                 onClick={loadMore} 
                 disabled={loading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 {loading ? (
                   <><ClipLoader size={16} color="#ffffff" /> <span className="ml-2">Carregando...</span></>

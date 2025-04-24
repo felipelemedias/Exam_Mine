@@ -5,19 +5,22 @@ import {
   where, 
   getDocs, 
   getDoc, 
+  setDoc, 
   doc, 
   Timestamp,
   orderBy,
   limit,
   startAfter,
   DocumentData,
-  QueryDocumentSnapshot
+  QueryDocumentSnapshot,
+  collectionGroup
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { User } from '../types/auth';
 import { Interaction } from '../types/interaction';
 
 // Collections
+const USERS_COLLECTION = 'users';
 const INTERACTIONS_COLLECTION = 'interactions';
 
 export const firebaseService = {
@@ -31,15 +34,23 @@ export const firebaseService = {
       }
       
       const interactionData = {
-        user_email: user.email,
         uid: user.uid,
+        user_email: user.email,
         agent_type: agentType,
         question,
         answer,
         timestamp: Timestamp.now()
       };
       
-      const docRef = await addDoc(collection(db, INTERACTIONS_COLLECTION), interactionData);
+      // Save to nested collection under user
+      const userInteractionsRef = collection(
+        db, 
+        `${USERS_COLLECTION}/${user.uid}/${INTERACTIONS_COLLECTION}`
+      );
+      
+      const docRef = await addDoc(userInteractionsRef, interactionData);
+      console.log("Interaction saved successfully to user's subcollection");
+      
       return docRef.id;
     } catch (error) {
       console.error("Error saving interaction:", error);
@@ -59,13 +70,18 @@ export const firebaseService = {
         throw new Error("User not authenticated");
       }
       
+      // Reference to the nested subcollection
+      const userInteractionsRef = collection(
+        db, 
+        `${USERS_COLLECTION}/${user.uid}/${INTERACTIONS_COLLECTION}`
+      );
+      
       let q;
       
       if (lastVisible) {
         // Get next page
         q = query(
-          collection(db, INTERACTIONS_COLLECTION),
-          where("uid", "==", user.uid),
+          userInteractionsRef,
           orderBy("timestamp", "desc"),
           startAfter(lastVisible),
           limit(pageSize)
@@ -73,14 +89,15 @@ export const firebaseService = {
       } else {
         // Get first page
         q = query(
-          collection(db, INTERACTIONS_COLLECTION),
-          where("uid", "==", user.uid),
+          userInteractionsRef,
           orderBy("timestamp", "desc"),
           limit(pageSize)
         );
       }
       
+      console.log("Fetching interactions for user:", user.uid);
       const querySnapshot = await getDocs(q);
+      console.log("Retrieved interactions:", querySnapshot.size);
       
       // Get last document for pagination
       const lastVisibleDoc = querySnapshot.docs.length > 0 
@@ -105,6 +122,31 @@ export const firebaseService = {
       };
     } catch (error) {
       console.error("Error getting user interactions:", error);
+      throw error;
+    }
+  },
+  
+  // Save user profile to Firestore
+  saveUserProfile: async (user: User): Promise<void> => {
+    try {
+      if (!user || !user.uid) {
+        throw new Error("Invalid user data");
+      }
+      
+      const userRef = doc(db, USERS_COLLECTION, user.uid);
+      
+      await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || null,
+        photoURL: user.photoURL || null,
+        lastLogin: Timestamp.now(),
+        createdAt: Timestamp.now()
+      });
+      
+      console.log("User profile saved successfully");
+    } catch (error) {
+      console.error("Error saving user profile:", error);
       throw error;
     }
   }

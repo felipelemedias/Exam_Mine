@@ -54,7 +54,7 @@ export const LoginScreen: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pt-20 pb-6 flex items-center justify-center">
+      <main className="flex items-center justify-center flex-1 pt-20 pb-6">
         <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">Login</h2>
@@ -73,7 +73,7 @@ export const LoginScreen: React.FC = () => {
             <Button
               onClick={handleGoogleLogin}
               disabled={authState.loading}
-              className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               {authState.loading ? (
                 <ClipLoader size={20} color="#ffffff" />
@@ -92,7 +92,7 @@ export const LoginScreen: React.FC = () => {
               )}
             </Button>
 
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-6 text-sm text-center">
               <p className="text-gray-600">
                 Ao fazer login, você concorda com nossos Termos de Serviço e Política de Privacidade.
               </p>

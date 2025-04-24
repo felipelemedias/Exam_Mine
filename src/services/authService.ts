@@ -79,14 +79,7 @@ const authService = {
   verifyTokenWithBackend: async (token: string): Promise<boolean> => {
     try {
       // TODO: Call the backend API to verify the token
-      // const response = await fetch('/api/verify-token', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${token}`
-      //   }
-      // });
-      // return response.ok;
+      // In a production app, you might want to verify the token with your backend
       
       // For now, just return true if we have a token
       return !!token;

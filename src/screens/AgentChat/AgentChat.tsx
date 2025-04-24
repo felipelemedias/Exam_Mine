@@ -289,12 +289,12 @@ export const AgentChat: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 pt-20 pb-6">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-4xl mx-auto p-6 shadow-lg">
-            <div className="mb-6 flex items-center gap-3">
+        <div className="container px-4 mx-auto">
+          <Card className="max-w-4xl p-6 mx-auto shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
               <div className="relative w-8 h-8">
                 <img
-                  className="w-full h-full object-contain"
+                  className="object-contain w-full h-full"
                   alt="Agent icon"
                   src={agent.icon}
                 />

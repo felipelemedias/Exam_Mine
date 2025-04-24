@@ -35,6 +35,7 @@ api.interceptors.response.use(
   }
 );
 
+// Fix the API URLs - remove the "api/" prefix
 // API functions for each agent
 export const analyzeExam = async (file: File) => {
   console.log("Upload initiated for file:", file.name, "Size:", (file.size / 1024 / 1024).toFixed(2), "MB");

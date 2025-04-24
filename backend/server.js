@@ -9,31 +9,51 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config();
 
-// Initialize Firebase Admin with fallback for local development
-let firebaseInitialized = true;
+// Initialize Firebase Admin - Check for service account
+let serviceAccount = null;
 try {
-  // Initialize Firebase Admin SDK
-  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    : {
+  // Try to load from environment variable
+  const firebaseConfig = process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (firebaseConfig) {
+    serviceAccount = JSON.parse(firebaseConfig);
+    console.log("Firebase config loaded from environment variable");
+  } else {
+    // Try to load from file
+    const serviceAccountPath = path.join(__dirname, 'firebase-service-account.json');
+    if (fs.existsSync(serviceAccountPath)) {
+      serviceAccount = require(serviceAccountPath);
+      console.log("Firebase config loaded from service account file");
+    } else {
+      console.warn("No Firebase service account found, using default configuration");
+      serviceAccount = {
         "type": "service_account",
         "project_id": "exam-mine"
-        // In production, this would have proper service account credentials
       };
-  
+    }
+  }
+} catch (error) {
+  console.error("Error loading Firebase configuration:", error);
+  serviceAccount = {
+    "type": "service_account",
+    "project_id": "exam-mine"
+  };
+}
+
+// Initialize Firebase Admin SDK
+let firebaseInitialized = true;
+let db = null;
+try {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    projectId: "exam-mine"
+    projectId: serviceAccount.project_id
   });
   
   console.log("Firebase Admin initialized successfully");
+  db = admin.firestore();
 } catch (error) {
   console.error("Error initializing Firebase Admin:", error);
   firebaseInitialized = false;
 }
-
-// Create database reference only if Firebase initialized successfully
-const db = firebaseInitialized ? admin.firestore() : null;
 
 // Create Express app
 const app = express();
@@ -92,6 +112,32 @@ const verifyFirebaseToken = async (req, res, next) => {
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     req.user = decodedToken;
+    
+    // Save user to Firestore if authenticated
+    if (firebaseInitialized && db) {
+      try {
+        const userRef = db.collection('users').doc(decodedToken.uid);
+        
+        // We'll use set with merge to update existing users
+        await userRef.set({
+          uid: decodedToken.uid,
+          email: decodedToken.email,
+          displayName: decodedToken.name || null,
+          photoURL: decodedToken.picture || null,
+          lastLogin: admin.firestore.FieldValue.serverTimestamp(),
+          // Only set createdAt on create, not on update
+          createdAt: userRef.get().then(doc => 
+            doc.exists ? doc.data().createdAt : admin.firestore.FieldValue.serverTimestamp()
+          )
+        }, { merge: true });
+        
+        console.log(`User ${decodedToken.email} saved/updated in Firestore`);
+      } catch (error) {
+        console.error("Error saving user to Firestore:", error);
+        // Continue even if saving user fails
+      }
+    }
+    
     next();
   } catch (error) {
     console.error('Error verifying token:', error);
@@ -107,6 +153,22 @@ const saveInteraction = async (userData, agentType, question, answer) => {
   }
   
   try {
+    // Save to subcollection of user
+    const userRef = db.collection('users').doc(userData.uid);
+    const interactionRef = userRef.collection('interactions').doc();
+    
+    await interactionRef.set({
+      uid: userData.uid,
+      user_email: userData.email,
+      agent_type: agentType,
+      question: question,
+      answer: answer,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
+    console.log(`Interaction saved for user ${userData.email}, agent ${agentType}`);
+    
+    // For backward compatibility, also save to main interactions collection
     await db.collection('interactions').add({
       uid: userData.uid,
       user_email: userData.email,
@@ -115,7 +177,6 @@ const saveInteraction = async (userData, agentType, question, answer) => {
       answer: answer,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
-    console.log(`Interaction saved for user ${userData.email}, agent ${agentType}`);
   } catch (error) {
     console.error('Error saving interaction:', error);
   }
@@ -197,7 +258,7 @@ Esta análise não substitui a consulta com um profissional de saúde. Procure o
 });
 
 // Handler for exam follow-up questions
-app.post('/agents/exam-question', verifyFirebaseToken, express.json(), async (req, res) => {
+app.post('/agents/exam-question', verifyFirebaseToken, formParser, async (req, res) => {
   try {
     console.log("Received exam follow-up question");
     const { question, session_id } = req.body;
@@ -240,7 +301,7 @@ Esta resposta não substitui a consulta com um profissional de saúde.`;
 // Handler for medication info - no authentication required
 app.post('/agents/medication-info', formParser, async (req, res) => {
   try {
-    console.log("Received medication info request", req.body);
+    console.log("Received medication info request");
     
     const medication_name = req.body.medication_name;
     
@@ -282,6 +343,16 @@ Esta informação tem caráter educativo e não substitui a orientação de um p
     console.log("Sending medication info response");
     res.json({ information: infoResponse });
     
+    // Save interaction if user is authenticated
+    if (req.user && req.user.uid) {
+      await saveInteraction(
+        req.user, 
+        'medication-info',
+        `Busca de informações: ${medication_name}`,
+        infoResponse
+      );
+    }
+    
   } catch (error) {
     console.error('Error getting medication info:', error);
     res.status(500).json({ detail: 'Error getting medication info: ' + error.message });
@@ -291,7 +362,7 @@ Esta informação tem caráter educativo e não substitui a orientação de um p
 // Handler for medication prices - no authentication required
 app.post('/agents/medication-prices', formParser, async (req, res) => {
   try {
-    console.log("Received medication prices request", req.body);
+    console.log("Received medication prices request");
     
     const medication_name = req.body.medication_name;
     
@@ -334,14 +405,24 @@ Os preços podem variar de acordo com a região e período de consulta.
     console.log("Sending medication prices response");
     res.json({ prices: pricesResponse });
     
+    // Save interaction if user is authenticated
+    if (req.user && req.user.uid) {
+      await saveInteraction(
+        req.user,
+        'medication-prices',
+        `Busca de preços: ${medication_name}`,
+        pricesResponse
+      );
+    }
+    
   } catch (error) {
     console.error('Error getting medication prices:', error);
     res.status(500).json({ detail: 'Error getting medication prices: ' + error.message });
   }
 });
 
-// Handler for general health questions - requires authentication
-app.post('/agents/general-question', verifyFirebaseToken, express.json(), async (req, res) => {
+// Handler for general health questions
+app.post('/agents/general-question', formParser, async (req, res) => {
   try {
     console.log("Received general health question");
     
@@ -363,12 +444,14 @@ Recomendo consultar um profissional de saúde para uma avaliação adequada, dia
 Esta informação tem caráter geral e educativo, não substituindo a consulta com um profissional de saúde qualificado.`;
     
     // Save interaction to Firestore if user is authenticated
-    await saveInteraction(
-      req.user,
-      'general-question', 
-      question,
-      answerResponse
-    );
+    if (req.user && req.user.uid) {
+      await saveInteraction(
+        req.user,
+        'general-question', 
+        question,
+        answerResponse
+      );
+    }
     
     console.log("Sending general question response");
     res.json({ answer: answerResponse });
@@ -376,6 +459,54 @@ Esta informação tem caráter geral e educativo, não substituindo a consulta c
   } catch (error) {
     console.error('Error processing general question:', error);
     res.status(500).json({ detail: 'Error processing general question: ' + error.message });
+  }
+});
+
+// Endpoint for getting user's interaction history
+app.get('/api/history', verifyFirebaseToken, async (req, res) => {
+  try {
+    if (!firebaseInitialized || !db) {
+      return res.status(500).json({ detail: 'Firebase not initialized' });
+    }
+    
+    if (!req.user || !req.user.uid) {
+      return res.status(401).json({ detail: 'Authentication required' });
+    }
+    
+    const limit = parseInt(req.query.limit) || 50;
+    const offset = parseInt(req.query.offset) || 0;
+    
+    console.log(`Getting interaction history for user ${req.user.uid}, limit: ${limit}, offset: ${offset}`);
+    
+    // Get interactions from the nested subcollection
+    const userRef = db.collection('users').doc(req.user.uid);
+    const interactionsRef = userRef.collection('interactions');
+    
+    const snapshot = await interactionsRef
+      .orderBy('timestamp', 'desc')
+      .limit(limit)
+      .get();
+    
+    const interactions = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      interactions.push({
+        id: doc.id,
+        agent_type: data.agent_type,
+        question: data.question,
+        answer: data.answer,
+        timestamp: data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString()
+      });
+    });
+    
+    console.log(`Found ${interactions.length} interactions for user ${req.user.uid}`);
+    res.json(interactions);
+    
+  } catch (error) {
+    console.error('Error getting interaction history:', error);
+    res.status(500).json({ 
+      detail: 'Error getting interaction history: ' + error.message 
+    });
   }
 });
 
