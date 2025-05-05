@@ -7,14 +7,18 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend    # <-- define o cwd como backend
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
