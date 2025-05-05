@@ -1,0 +1,42 @@
+# ──────────────────────────────────────────────
+# 1) Ambiente virtual e variáveis de ambiente
+# ──────────────────────────────────────────────
+venv/
+.env
+
+# ──────────────────────────────────────────────
+# 2) Bytecode e caches do Python
+# ──────────────────────────────────────────────
+# Arquivos .pyc, .pyo, etc.
+*.py[cod]
+*.pyo
+
+# Pastas __pycache__
+__pycache__/
+**/__pycache__/
+
+# ──────────────────────────────────────────────
+# 3) Cache do pytest e relatórios de cobertura
+# ──────────────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ──────────────────────────────────────────────
+# 4) Banco de dados local e logs
+# ──────────────────────────────────────────────
+*.sqlite3
+*.db
+*.log
+
+# ──────────────────────────────────────────────
+# 5) Configurações de IDE/editor
+# ──────────────────────────────────────────────
+.vscode/
+
+# ──────────────────────────────────────────────
+# 6) Artefatos pip / wheel / pacotes locais
+# ──────────────────────────────────────────────
+pip-wheel-metadata/
+__pypackages__/

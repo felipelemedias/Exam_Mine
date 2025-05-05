@@ -215,11 +215,8 @@ export const AgentChat: React.FC = () => {
         [...prev.filter(msg => msg.id !== processingMsg.id), responseMsg]
       );
       
-      // Save interaction to Firebase if authenticated
-      if (authState.isAuthenticated && (
-        currentAgentType === AgentType.EXAM_ANALYZER ||
-        currentAgentType === AgentType.GENERAL_QUESTION
-      )) {
+      // Save interaction to Firebase if authenticated - CHANGED: Now saving all agent interactions
+      if (authState.isAuthenticated) {
         await firebaseService.saveInteraction(
           currentAgentType,
           text,

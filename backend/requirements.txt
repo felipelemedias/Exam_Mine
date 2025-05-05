@@ -1,17 +1,24 @@
+# servidor
 fastapi==0.110.0
 uvicorn==0.27.1
-python-multipart==0.0.7
-python-dotenv==1.0.1
-pydantic==2.5.2
-pydantic[email]==2.5.2
-sqlalchemy==2.0.27
-psycopg2-binary==2.9.9
-passlib==1.7.4
-bcrypt==4.1.2
-python-jose==3.3.0
-firebase-admin==6.4.0
+starlette>=0.27.0
+
+# HTTP + scraping
 requests==2.31.0
 beautifulsoup4==4.12.2
-pymupdf==1.23.6
+
+# PDF
+PyMuPDF==1.23.6
+
+# Auth e DB
+firebase-admin==6.4.0
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4
+SQLAlchemy==2.0.27
+psycopg2-binary==2.9.9
+
+# Gemini
 google-generativeai==0.4.0
-lxml==4.9.3
+
+# Utilitários
+python-dotenv==1.0.1
