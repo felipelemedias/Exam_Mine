@@ -26,9 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          # dependências de teste e multipart/form-data
-          pip install pytest pytest-cov httpx python-multipart
+          pip install -r requirements.txt -r dev-requirements.txt
 
       - name: Run tests
         run: pytest -v
