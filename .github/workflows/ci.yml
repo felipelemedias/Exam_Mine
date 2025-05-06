@@ -27,16 +27,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r dev-requirements.txt
-          pip install python-multipart
+          pip install lxml beautifulsoup4 pytest-asyncio pytest-mock
 
-      # Configura as variáveis de ambiente
       - name: Set up environment variables
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Adiciona esta linha
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
-          # Adiciona outras variáveis se necessário
           echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> $GITHUB_ENV
 
       - name: Run tests

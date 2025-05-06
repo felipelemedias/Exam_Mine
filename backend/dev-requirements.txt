@@ -4,4 +4,4 @@ pytest-asyncio
 pytest-mock
 requests-mock
 aioresponses
-httpx  # se usar em testes integrados
+httpx
