@@ -26,9 +26,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt -r dev-requirements.txt
-          # dependências de teste, multipart/form-data e parser HTML
-          pip install python-multipart lxml
+          pip install -r dev-requirements.txt
+          pip install -r requirements.txt
+
 
 
       - name: Set up environment variables
