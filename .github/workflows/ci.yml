@@ -27,15 +27,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r dev-requirements.txt
-          
-      # Adiciona as credenciais do Firebase como secret
-      - name: Set up Firebase credentials
+          pip install python-multipart
+
+      # Configura as variáveis de ambiente
+      - name: Set up environment variables
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}  # Adiciona esta linha
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
         run: |
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
-          # Configure a variável de ambiente para o arquivo de credenciais se necessário
-          echo "GOOGLE_APPLICATION_CREDENTIALS=firebase_credentials.json" >> $GITHUB_ENV
+          # Adiciona outras variáveis se necessário
+          echo "GEMINI_API_KEY=$GEMINI_API_KEY" >> $GITHUB_ENV
 
       - name: Run tests
         run: pytest -v

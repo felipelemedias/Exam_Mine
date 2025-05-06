@@ -4,8 +4,12 @@ import logging
 from dotenv import load_dotenv
 from .scrapers import MedicationInfoScraper, MedicationPriceScraper
 
-# Load environment variables
-load_dotenv()
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Carrega o .env.local prioritariamente, fallback para .env
+env_path = Path(__file__).parent.parent / '.env.local'
+load_dotenv(env_path if env_path.exists() else Path(__file__).parent.parent / '.env')
 
 # Set up logger
 logger = logging.getLogger("exam-analyzer-api")
