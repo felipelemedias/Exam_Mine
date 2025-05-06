@@ -16,9 +16,3 @@ def client():
     Fixture que retorna um TestClient configurado para a aplicação FastAPI.
     """
     return TestClient(app)
-
-pytest_plugins = [
-    "pytest_mock",
-    "requests_mock",  # Para requests-mock
-    "aioresponses"    # Para aioresponses
-]
