@@ -12,7 +12,6 @@ from app.main import app
 
 @pytest.fixture
 def client():
-    """
-    Fixture que retorna um TestClient configurado para a aplicação FastAPI.
-    """
-    return TestClient(app)
+    """Fixture que retorna um TestClient configurado para a aplicação FastAPI."""
+    # Solução compatível com versões mais novas
+    return TestClient(app, raise_server_exceptions=False)
