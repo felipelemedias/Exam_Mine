@@ -27,7 +27,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r dev-requirements.txt
-          pip install python-multipart
+          
+      # Adiciona as credenciais do Firebase como secret
+      - name: Set up Firebase credentials
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+        run: |
+          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+          # Configure a variável de ambiente para o arquivo de credenciais se necessário
+          echo "GOOGLE_APPLICATION_CREDENTIALS=firebase_credentials.json" >> $GITHUB_ENV
 
       - name: Run tests
         run: pytest -v

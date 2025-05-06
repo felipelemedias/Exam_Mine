@@ -1,8 +1,9 @@
 # ──────────────────────────────────────────────
 # 1) Ambiente virtual e variáveis de ambiente
 # ──────────────────────────────────────────────
-venv/
+/venv
 .env
+.env.local
 
 # ──────────────────────────────────────────────
 # 2) Bytecode e caches do Python
@@ -40,3 +41,5 @@ htmlcov/
 # ──────────────────────────────────────────────
 pip-wheel-metadata/
 __pypackages__/
+
+FIREBASE_CREDENTIALS.json
