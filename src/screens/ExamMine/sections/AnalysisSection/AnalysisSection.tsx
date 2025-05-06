@@ -1,91 +1,65 @@
 import React from "react";
 import { Button } from "../../../../components/ui/button";
-import { Card, CardContent } from "../../../../components/ui/card";
+import { Check } from "lucide-react";
+import analysisIllustration from "../../../../assets/analysis-illustration.png";
+import iconMicroscope from "../../../../assets/icon-microscope.png";
+import { useNavigate } from "react-router-dom";
 
-// Data for bullet points
 const aiFeatures = [
-  {
-    id: 1,
-    text: "Receba respostas claras e confiáveis para suas perguntas sobre exames",
-    icon: "/mask-group-18.svg",
-  },
-  {
-    id: 2,
-    text: "Conte com a IA para traduzir termos técnicos em linguagem simples",
-    icon: "/mask-group-11.svg",
-  },
-  {
-    id: 3,
-    text: "Oriente-se melhor sobre resultados e próximos passos",
-    icon: "/mask-group-4.svg",
-  },
-  {
-    id: 4,
-    text: "Apoio acessível e personalizado para suas dúvidas de saúde",
-    icon: "/mask-group-7.svg",
-  },
+  "Receba respostas claras e confiáveis para suas perguntas sobre exames",
+  "Conte com a IA para traduzir termos técnicos em linguagem simples",
+  "Oriente-se melhor sobre resultados e próximos passos",
+  "Apoio acessível e personalizado para suas dúvidas de saúde",
 ];
 
 export const AnalysisSection = (): JSX.Element => {
+  const navigate = useNavigate();
   return (
-    <section className="w-full py-16 px-4 bg-[#e8f0fa] rounded-[36px]">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8 items-center">
-        {/* Left side - Medical illustration */}
-        <div className="w-full md:w-1/2 flex justify-center">
-          <div className="relative w-full max-w-[457px] h-[387px]">
-            <img
-              className="w-full h-full object-contain"
-              alt="Medical analysis illustration"
-              src="/g756.png"
-            />
-            {/* We're keeping just the main image and removing the numerous overlapping images 
-                to simplify the implementation while maintaining the visual appearance */}
-          </div>
-        </div>
-
-        {/* Right side - Content */}
-        <div className="w-full md:w-1/2 flex flex-col space-y-6">
-          {/* Title with icon */}
+    <section className="bg-[#e8f0fa] rounded-[36px] py-16 px-6 md:px-12 max-w-[1312px] mx-auto">
+      <div className="flex flex-col-reverse items-center gap-8 md:flex-row">
+        
+        <div className="w-full space-y-6 md:w-1/2">
           <div className="flex items-center gap-2">
-            <div className="relative w-8 h-8">
-              <img
-                className="w-full h-full object-contain"
-                alt="AI icon"
-                src="/g808-1.png"
-              />
-            </div>
-            <h3 className="font-bold text-xl text-[#375375] font-sans">
+            <img
+              src={iconMicroscope}
+              alt="Microscope icon"
+              className="object-contain w-8 h-8"
+            />
+            <h3 className="font-semibold text-lg text-[#375375]">
               Avaliação de dúvidas com IA
             </h3>
           </div>
 
-          {/* Main heading */}
-          <h2 className="font-bold text-[32px] text-[#375375] leading-[44px]">
-            Esclareça Suas Dúvidas com o Apoio da IA
+          <h2 className="font-bold text-2xl md:text-[32px] text-[#375375] leading-tight">
+            Esclareça Suas Dúvidas <br className="hidden md:block" />
+            com o Apoio da IA
           </h2>
 
-          {/* Feature list */}
-          <Card className="border-none shadow-none bg-transparent">
-            <CardContent className="p-0 space-y-4">
-              {aiFeatures.map((feature) => (
-                <div key={feature.id} className="flex items-start gap-2">
-                  <img
-                    className="w-3.5 h-3.5 mt-1.5"
-                    alt="Feature icon"
-                    src={feature.icon}
-                  />
-                  <p className="text-base text-[#375375] leading-6">
-                    {feature.text}
-                  </p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          <ul className="space-y-4">
+            {aiFeatures.map((text, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <Check className="mt-1 text-[#1760c6]" size={20} />
+                <p className="text-base text-[#375375] leading-relaxed">
+                  {text}
+                </p>
+              </li>
+            ))}
+          </ul>
 
-          {/* CTA Button */}
-          <Button className="w-[251px] h-[42px] bg-[#1760c6] rounded-full text-sm font-semibold">
+          <Button
+            onClick={() => navigate("/agent/general-question")}
+            className="mt-4 bg-[#1760c6] hover:bg-[#1253af] text-white rounded-full px-6 py-3 text-sm font-semibold"
+          >
             Explore Avaliação de Dúvidas
           </Button>
+        </div>
+
+        <div className="flex justify-center w-full md:w-1/2">
+          <img
+            src={analysisIllustration}
+            alt="Ilustração de análise médica"
+            className="w-full max-w-[490px] h-auto object-contain"
+          />
         </div>
       </div>
     </section>

@@ -1,8 +1,22 @@
 import React from "react";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 export const TestimonialsSection = (): JSX.Element => {
+  const navigate = useNavigate();
+  const { authState } = useAuth();
+
+  // Handle click: redirect to exam analysis or login
+  const handleClick = () => {
+    if (authState.isAuthenticated) {
+      navigate("/agent/exam-analysis");
+    } else {
+      navigate("/login");
+    }
+  };
+
   // Feature tags data
   const featureRows = [
     [
@@ -94,7 +108,10 @@ export const TestimonialsSection = (): JSX.Element => {
           </div>
 
           {/* CTA Button */}
-          <Button className="w-full max-w-[505px] h-[45px] bg-[#3a7eff] rounded-[9465px] text-white font-bold text-[15px] leading-[23px] font-sans">
+          <Button
+            onClick={handleClick}
+            className="w-full max-w-[505px] h-[45px] bg-[#3a7eff] rounded-[9465px] text-white font-bold text-[15px] leading-[23px] font-sans"
+          >
             Saiba mais sobre todos os benefícios do Exam Mine aqui
           </Button>
         </div>

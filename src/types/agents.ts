@@ -1,3 +1,5 @@
+import { FileText, BookOpenText, ShoppingCart, MessageCircleHeart } from "lucide-react";
+
 export enum AgentType {
   EXAM_ANALYZER = "exam-analyzer",
   MEDICATION_INFO = "medication-info",
@@ -9,7 +11,7 @@ export interface Agent {
   id: AgentType;
   name: string;
   description: string;
-  icon: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>; // <- atualizado
   color: string;
   inputType: "file" | "text" | "none";
   inputPlaceholder?: string;
@@ -23,7 +25,7 @@ export const AGENTS: Record<AgentType, Agent> = {
     id: AgentType.EXAM_ANALYZER,
     name: "Análise de Exames",
     description: "Faça upload de um PDF de exame para análise detalhada",
-    icon: "/g808-1.png",
+    icon: FileText,
     color: "bg-blue-600",
     inputType: "file",
     fileTypes: ".pdf",
@@ -34,7 +36,7 @@ export const AGENTS: Record<AgentType, Agent> = {
     id: AgentType.MEDICATION_INFO,
     name: "Consulta de Bulas",
     description: "Informações detalhadas sobre medicamentos",
-    icon: "/group-24.png",
+    icon: BookOpenText,
     color: "bg-green-500",
     inputType: "text",
     inputPlaceholder: "Digite o nome do medicamento",
@@ -45,7 +47,7 @@ export const AGENTS: Record<AgentType, Agent> = {
     id: AgentType.MEDICATION_PRICES,
     name: "Busca de Remédios",
     description: "Compare preços de medicamentos",
-    icon: "/vector-7.svg", 
+    icon: ShoppingCart,
     color: "bg-blue-500",
     inputType: "text",
     inputPlaceholder: "Digite o nome do medicamento",
@@ -56,7 +58,7 @@ export const AGENTS: Record<AgentType, Agent> = {
     id: AgentType.GENERAL_QUESTION,
     name: "Avaliação de Dúvidas com IA",
     description: "Esclarecimento de dúvidas médicas",
-    icon: "/g808-1.png",
+    icon: MessageCircleHeart,
     color: "bg-blue-600",
     inputType: "text",
     inputPlaceholder: "Digite sua pergunta sobre saúde",

@@ -1,125 +1,136 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Separator } from '../ui/separator';
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/button';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Separator } from "../ui/separator";
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../ui/button";
+import logoIcon from "../../assets/exam-mine-logo.png";
 
 export const AppHeader: React.FC = () => {
   const navigate = useNavigate();
   const { authState, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-  };
+  const links = [
+    { label: "Buscar remédio", to: "/agent/medication-prices" },
+    { label: "Consultar bula", to: "/agent/medication-info" },
+    { label: "Avaliação de dúvidas com IA", to: "/agent/general-question" },
+    ...(authState.isAuthenticated
+      ? [
+          { label: "Análise de Exames", to: "/agent/exam-analyzer" },
+          { label: "Histórico", to: "/history" },
+        ]
+      : []),
+  ];
 
   const handleLogout = async () => {
     await logout();
-    navigate('/');
+    navigate("/");
+    setMenuOpen(false);
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full h-16 bg-white shadow-[0px_2px_10px_#00507d14]">
-      <div className="flex items-center justify-between h-full px-8">
-        <div 
-          className="flex items-center h-[45px] cursor-pointer" 
-          onClick={() => handleNavigation('/')}
-        >
-          <div className="w-[39px] h-[45px] bg-[url(/group-34.png)] bg-[100%_100%]" />
-          <div className="ml-6 text-[14.6px] whitespace-nowrap font-['Archivo',Helvetica]">
-            <span className="text-[#565656]">Exam </span>
-            <span className="font-bold text-[#565656]">Mine</span>
-          </div>
-        </div>
+    <header className="fixed inset-x-0 top-0 z-50 bg-white shadow-md">
+      <div className="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl md:px-8">
+        {/* LOGO */}
+        <Link to="/" className="flex items-center">
+          <img src={logoIcon} alt="Exam Mine" className="w-auto h-8 md:h-10" />
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-[10px]">
-            <div 
-              className="font-['Open_Sans',Helvetica] text-[#565656] text-[16.9px] cursor-pointer hover:text-blue-600"
-              onClick={() => handleNavigation(`/agent/medication-prices`)}
-            >
-              Buscar remédio
-            </div>
-            <Separator
-              orientation="vertical"
-              className="h-[30px] bg-[#e6e6e6]"
-            />
-            <div 
-              className="font-['Open_Sans',Helvetica] text-[#565656] text-[16.9px] cursor-pointer hover:text-blue-600"
-              onClick={() => handleNavigation(`/agent/medication-info`)}
-            >
-              Consultar bula
-            </div>
-            <Separator
-              orientation="vertical"
-              className="h-[30px] bg-[#e6e6e6]"
-            />
-            <div 
-              className="font-['Open_Sans',Helvetica] text-[#565656] text-[16.9px] cursor-pointer hover:text-blue-600"
-              onClick={() => handleNavigation(`/agent/general-question`)}
-            >
-              Avaliação de dúvidas com IA
-            </div>
-            
-            {/* Show Análise de Exames only for authenticated users */}
-            {authState.isAuthenticated && (
-              <>
-                <Separator
-                  orientation="vertical"
-                  className="h-[30px] bg-[#e6e6e6]"
-                />
-                <div 
-                  className="font-['Open_Sans',Helvetica] text-[#565656] text-[16.9px] cursor-pointer hover:text-blue-600"
-                  onClick={() => handleNavigation('/agent/exam-analyzer')}
-                >
-                  Análise de Exames
-                </div>
-                <Separator
-                  orientation="vertical"
-                  className="h-[30px] bg-[#e6e6e6]"
-                />
-                <div 
-                  className="font-['Open_Sans',Helvetica] text-[#565656] text-[16.9px] cursor-pointer hover:text-blue-600"
-                  onClick={() => handleNavigation('/history')}
-                >
-                  Histórico
-                </div>
-              </>
-            )}
-          </div>
-          
-          {/* Auth buttons */}
-          {authState.isAuthenticated ? (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center space-x-2">
-                {authState.user?.photoURL && (
-                  <img 
-                    src={authState.user.photoURL}
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full"
+        </Link>
+
+        {/* NAV + AUTH (desktop) */}
+        <div className="items-center hidden space-x-8 md:flex">
+          <nav className="flex items-center space-x-4">
+            {links.map((link, i) => (
+              <React.Fragment key={link.to}>
+                {i > 0 && (
+                  <Separator
+                    orientation="vertical"
+                    className="h-6 mx-2 bg-gray-300"
                   />
                 )}
-                <span className="text-sm text-gray-600">
-                  {authState.user?.displayName || authState.user?.email}
-                </span>
-              </div>
-              <Button 
+                <Link
+                  to={link.to}
+                  className="text-gray-700 hover:text-blue-600 whitespace-nowrap"
+                >
+                  {link.label}
+                </Link>
+              </React.Fragment>
+            ))}
+          </nav>
+
+          {authState.isAuthenticated ? (
+            <div className="flex items-center space-x-4">
+              {authState.user?.photoURL && (
+                <img
+                  src={authState.user.photoURL}
+                  alt="Avatar"
+                  className="object-cover w-8 h-8 rounded-full"
+                />
+              )}
+              <span className="text-sm text-gray-600 whitespace-nowrap">
+                {authState.user?.displayName || authState.user?.email}
+              </span>
+              <Button
                 variant="outline"
-                className="ml-4 font-semibold text-sm text-[#1760c6]"
+                className="text-sm text-[#1760c6]"
                 onClick={handleLogout}
               >
                 Sair
               </Button>
             </div>
           ) : (
-            <div 
-              className="ml-8 font-semibold text-sm text-[#1760c6] cursor-pointer hover:underline"
-              onClick={() => handleNavigation('/login')}
+            <Link
+              to="/login"
+              className="text-sm font-semibold text-[#1760c6] hover:underline whitespace-nowrap"
             >
               Entrar
-            </div>
+            </Link>
           )}
         </div>
+
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="text-2xl text-gray-700 md:hidden"
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
+
+      {menuOpen && (
+        <div className="bg-white border-t border-gray-200 shadow-sm md:hidden">
+          <div className="flex flex-col px-4 py-2 space-y-1">
+            {links.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="py-2 text-gray-700 hover:text-blue-600"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {authState.isAuthenticated ? (
+              <Button
+                variant="outline"
+                className="w-full mt-2"
+                onClick={handleLogout}
+              >
+                Sair
+              </Button>
+            ) : (
+              <Link
+                to="/login"
+                className="py-2 text-center font-semibold text-[#1760c6] hover:underline"
+                onClick={() => setMenuOpen(false)}
+              >
+                Entrar
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };

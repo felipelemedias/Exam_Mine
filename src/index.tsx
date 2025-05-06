@@ -8,7 +8,6 @@ import { HistoryScreen } from "./screens/History/HistoryScreen";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-// Remove RegisterScreen since we're using Google auth exclusively
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>

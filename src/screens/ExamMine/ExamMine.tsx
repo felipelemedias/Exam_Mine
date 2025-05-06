@@ -28,49 +28,40 @@ export const ExamMine = (): JSX.Element => {
 
   return (
     <div className="relative w-full bg-white">
-      {/* Use the AppHeader component */}
       <AppHeader />
 
-      {/* Main Content */}
       <div className="pt-20">
-        {/* Call To Action Section */}
         <section className="w-full">
           <CallToActionSection onButtonClick={handleConnectClick} />
         </section>
 
-        {/* Hero Section with blue background */}
         <section className="w-full bg-[#050a1e]">
-          <div className="h-[852px] bg-[#1760c6]">
+          <div className="mt-10 h-[652px] bg-[#ffffff]">
+          <h2 className="text-center text-[40px] font-bold text-[#375375] font-['Inter',Helvetica] leading-[56px] mb-8">
+              Descubra nossas outras ferramentas em destaque
+            </h2>
             <HeroSection />
           </div>
         </section>
 
-        {/* Features Section */}
         <section className="w-full">
-          <div className="mx-auto py-12">
-            <h2 className="text-center text-[40px] font-bold text-[#375375] font-['Inter',Helvetica] leading-[56px] mb-8">
-              Descubra nossas outras ferramentas em destaque
-            </h2>
+          <div className="py-12 mx-auto">
             <FeaturesSection />
           </div>
         </section>
 
-        {/* Analysis Section */}
-        <section className="w-full">
+        <section className="w-full mb-20">
           <AnalysisSection />
         </section>
 
-        {/* Tools Section */}
         <section className="w-full">
           <ToolsSection />
         </section>
 
-        {/* Footer Section */}
         <section className="w-full">
           <FooterSection />
         </section>
 
-        {/* Testimonials Section */}
         <section className="w-full">
           <TestimonialsSection />
         </section>
