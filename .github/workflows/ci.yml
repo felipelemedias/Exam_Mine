@@ -27,7 +27,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r dev-requirements.txt
-          pip install "httpx==0.23.0" "starlette==0.26.1"
+          # dependências de teste, multipart/form-data e parser HTML
+          pip install python-multipart lxml
+
 
       - name: Set up environment variables
         env:
