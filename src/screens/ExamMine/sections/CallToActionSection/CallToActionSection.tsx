@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../../../../components/ui/button";
-import heroImg from "../../../../assets/heroImg.png";
+import heroImg from "../../../../assets/heroimg.png";
 
 interface CallToActionSectionProps {
   onButtonClick: () => void;

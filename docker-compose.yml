@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: exam-mine-backend
+    ports:
+      - '8000:8000'
+    environment:
+      # Coloque aqui sua chave Gemini (sem aspas)
+      GEMINI_API_KEY: AIzaSyD4vEvWlPlVjlCsqLzIWyjEkfD9c6zt7vA
+
+      # Aponte para o arquivo JSON do Firebase; 
+      # você monta esse arquivo abaixo no volume.
+      FIREBASE_SERVICE_ACCOUNT_PATH: .\backend\FIREBASE_CREDENTIALS.json
+
+      # Se você preferir injetar o JSON completo como string:
+      # FIREBASE_SERVICE_ACCOUNT: |-
+      #   {
+      #     "type": "service_account",
+      #     "project_id": "...",
+      #     ...
+      #   }
+    volumes:
+      # monte o JSON baixado do Firebase aqui
+      - ./backend/firebase-service-account.json:/secrets/firebase-service-account.json:ro
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: exam-mine-frontend
+    depends_on:
+      - backend
+    ports:
+      - '80:80'
+    restart: unless-stopped
+
+# Não há necessidade de declarar volumes permanentes se for só para leitura do service account JSON
+# Secrets ou env_file também funcionam, mas este é o mínimo para rodar

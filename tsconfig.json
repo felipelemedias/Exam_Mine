@@ -1,11 +1,18 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
-    }
+  // "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",              // ← aqui
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
+    // … suas outras opções …
+  },
+  "include": [
+    "src",
+    "vite-env.d.ts"                  // ← não esqueça de incluir
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

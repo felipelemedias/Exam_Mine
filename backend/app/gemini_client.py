@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Carrega o .env.local prioritariamente, fallback para .env
-env_path = Path(__file__).parent.parent / '.env.local'
+env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(env_path if env_path.exists() else Path(__file__).parent.parent / '.env')
 
 # Set up logger

@@ -3,7 +3,7 @@ import authService from './authService';
 
 // Create an axios instance
 const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "",
   withCredentials: true, // Include credentials (cookies) in requests
 });
 
